@@ -2,7 +2,7 @@ import numpy as np
 
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
-gap = -1
+gap = -1 #we need to penalize a gap
 seq1 = None
 seq2 = None #these can be global
 
@@ -45,10 +45,9 @@ def score(matrix, x, y):
 	calculate the score for every position in the scoring matrix 
 	based on the position in the table's neighbors
 	"""
-	
 
 
     return None
-
+def path(): #how to decide which path to take through the scoring matrix
 def roc():
     return None
