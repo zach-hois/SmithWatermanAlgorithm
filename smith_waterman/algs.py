@@ -8,6 +8,8 @@ seq2 = "ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLA
 #these can be global
 
 def sw(seq1, seq2):
+	seq1 = seq1
+	seq2 = seq2
 	rows = len(seq1) + 1 #for the matrix, plus a lil extra for the gap
 	cols = len(seq2) + 1
 
@@ -24,15 +26,19 @@ def sw(seq1, seq2):
 
 	#using our alignment visualization function to show what is matches/not in the sequences
 	print(' Identities = {0}/{1} ({2:.1%}), Gaps = {3}/{4} ({5:.1%})'.format(idents,length1, idents / length1, gaps, length1, gaps / length1))
-
-	for i in range(0, length1, 60):
+	#this formula above will print out the % of matches in the sequence and the % of gaps too
+	for i in range(0, length1, 60): #visualize these and print the sequences that are aligned
 		seq1_slice = alignedSeq1[i:i+60]
-		print('SequenceA  {0:<4}  {1}  {2:<4}'.format(i + 1, seq1_slice, i + len(seq1_slice)))
+		print('Seq A  {0:<4}  {1}  {2:<4}'.format(i + 1, seq1_slice, i + len(seq1_slice)))
 		print('             {0}'.format(alignmentString1[i:i+60]))
 		seq2_slice = alignedSeq2[i:i+60]
-		print('SequenceB  {0:<4}  {1}  {2:<4}'.format(i + 1, seq2_slice, i + len(seq2_slice)))
+		print('Seq B  {0:<4}  {1}  {2:<4}'.format(i + 1, seq2_slice, i + len(seq2_slice)))
 		print()
-	return alignmentString1
+	print(alignedSeq1)
+	print(alignedSeq2)
+	#print(scoreMatrix)
+	print(startPosition)
+
     
 
 def newScoringMatrix(rows, cols):
@@ -71,7 +77,7 @@ def score(matrix, x, y):
     #return the best score of those calculated, this will be the way through the matrix and match up the seqs
 	return maximum 
 
-def path(scoreMatrix, startPosition): 
+def path(scoreMatrix, startPosition): #AKA traceback
 	"""
 	how to decide which path to take through the scoring matrix
 	taking the best path through the matrix based on the score will 
