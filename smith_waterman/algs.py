@@ -27,7 +27,7 @@ def sw(seq1, seq2):
 	#using our alignment visualization function to show what is matches/not in the sequences
 	print(' Identities = {0}/{1} ({2:.1%}), Gaps = {3}/{4} ({5:.1%})'.format(idents,length1, idents / length1, gaps, length1, gaps / length1))
 	#this formula above will print out the % of matches in the sequence and the % of gaps too
-	for i in range(0, length1, 60): #visualize these and print the sequences that are aligned
+	for i in range(0, length1, 100): #visualize these and print the sequences that are aligned
 		seq1_slice = alignedSeq1[i:i+60]
 		print('Seq A  {0:<4}  {1}  {2:<4}'.format(i + 1, seq1_slice, i + len(seq1_slice)))
 		print('             {0}'.format(alignmentString1[i:i+60]))
@@ -38,6 +38,9 @@ def sw(seq1, seq2):
 	print(alignedSeq2)
 	#print(scoreMatrix)
 	print(startPosition)
+	print(rows)
+	print(cols)
+	print(seq1)
 
     
 
@@ -48,7 +51,7 @@ def newScoringMatrix(rows, cols):
 	"""
 	scoreMatrix = [[0 for col in range(cols)] for row in range(rows)] #initialize
 	maxScore = 0
-	maxPosition = None
+	maxPosition = None #highest recognized score
 	for i in range(1, rows): #begin looking through the matrix
 		for j in range(1, cols):
 			score1 = score(scoreMatrix, i, j) #calculate the score for the position
@@ -96,7 +99,7 @@ def path(scoreMatrix, startPosition): #AKA traceback
 	while move != END: #if there is a scheduled move according to the function
 		if move == DIAG: #moving diagonally will be one up to x and y
 			alignedSeq1.append(seq1[x-1])
-			alignedSeq2.append(seq1[y-1])
+			alignedSeq2.append(seq2[y-1])
 			x-=1
 			y-=1
 		elif move == UP: #moving up (gap) would be just change in x
@@ -105,12 +108,12 @@ def path(scoreMatrix, startPosition): #AKA traceback
 			x-=1
 		else: #move sideways would be a change in the y here
 			alignedSeq1.append('-')
-			alignedSeq2.append(seq1[y-1])
+			alignedSeq2.append(seq2[y-1])
 			y-=1
 		move = moveFunction(scoreMatrix, x, y) #keep it going in the loop
 
 	alignedSeq1.append(seq1[x-1])
-	alignedSeq2.append(seq1[y-1])
+	alignedSeq2.append(seq2[y-1])
 
 	return ''.join(reversed(alignedSeq1)), ''.join(reversed(alignedSeq2)) #return the seq
 
