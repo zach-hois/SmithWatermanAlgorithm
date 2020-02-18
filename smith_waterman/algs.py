@@ -54,7 +54,7 @@ def score(matrix, x, y):
 
     return max(0, diagonalScore, upScore, leftScore) #return the best score of those calculated, this will be the way through the matrix and match up the seqs
 
-def path(): 
+def path(scoreMatrix, startPosition): 
 	"""
 	how to decide which path to take through the scoring matrix
 	taking the best path through the matrix based on the score will 
@@ -65,12 +65,57 @@ def path():
 	left move = gap in seq2
 	"""
 
-	END, DIAG, UP, LEFT = range(4)
-	alignedSeq1 = []
+	END, DIAG, UP, LEFT = range(4) #the potential moves we can make
+	alignedSeq1 = [] #initializations
 	alignedSeq2 = []
 	x, y = startPosition
-	return None
+	move = moveFunction(scoreMatrix, x, y)
+	while move != END: #if there is a scheduled move according to the function
+		if move == DIAG: #moving diagonally will be one up to x and y
+			alignedSeq1.append(seq1[x-1])
+			alignedSeq2.append(seq1[y-1])
+			x-=1
+			y-=1
+		elif move == UP: #moving up (gap) would be just change in x
+			alignedSeq1.append(seq1[x-1])
+			alignedSeq2.append('-')
+			x-=1
+		else: #move sideways would be a change in the y here
+			alignedSeq1.append('-')
+			alignedSeq2.append(seq1[y-1])
+			y-=1
+		move = moveFunction(scoreMatrix, x, y) #keep it going in the loop
 
+	alignedSeq1.append(seq1[x-1])
+	alignedSeq2.append(seq1[y-1])
+
+	return ''.join(reversed(alignedSeq1)), ''.join(reversed(alignedSeq2)) #return the seq
+
+def moveFunction(scoreMatrix, x, y):
+	"""
+	this will be the function that allows us to move throughout the scoring matrix
+	"""
+	diag = scoreMatrix[x-1][y-1] #all of the possible moves based on 
+	up = scoreMatrix[x-1][y] #coordinates in the scoring matrix
+	left = scoreMatrix[x][y-1]
+
+	if diag >= up and diag >= left: #in this function, a score "tie" is a diagonal move
+		return 1 if diag != 0 else 0 #0 in this case is the end
+ 	elif up > diag and up >= left: #tie here goes to the "up" move
+ 		return 2 if up != 0 else 0
+ 	elif left > diag and left > up:
+ 		return 3 if left != 0 else 0 #left move or end of sequence
+ 	else: #this is a safety measure
+ 		raise ValueError('invalid')
+
+def returnMatrix(matrix):
+	"""
+	using this to visualize the scoring matrix for sanity
+	"""
+	for row in matrix:
+		for col in row:
+			print('{0:4}'.format(col))
+			print()
 
 def roc():
     return None
