@@ -3,22 +3,22 @@ import numpy as np
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
 gap = -1 #we need to penalize a gap
-seq1 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM"
-seq2 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDMXXXXX"#"ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
+#seq1 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM"
+#seq2 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDMXXXXX"#"ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
 #these can be global
 
 def sw(seq1, seq2):
-	seq1=seq1
-	seq2=seq2
+	#seq1=seq1
+	#seq2=seq2
 	rows = len(seq1) + 1 #for the matrix, plus a lil extra for the gap
 	cols = len(seq2) + 1
 
 	#initialize the scoring matrix
-	scoreMatrix, startPosition = newScoringMatrix(rows, cols)
+	scoreMatrix, startPosition = newScoringMatrix(rows, cols,seq1,seq2)
 
 	#call the function to find the path through the scoring matrix,
 	#aligning the sequences
-	alignedSeq1, alignedSeq2 = path(scoreMatrix, startPosition)
+	alignedSeq1, alignedSeq2 = path(scoreMatrix, startPosition, seq1, seq2)
 	assert len(alignedSeq1) == len(alignedSeq2), 'aligned strings are not the same size'
 	# print the results 
 	alignmentString1, idents, gaps, mismatches = alignmentString(alignedSeq1, alignedSeq2)
@@ -44,7 +44,7 @@ def sw(seq1, seq2):
 
     
 
-def newScoringMatrix(rows, cols):
+def newScoringMatrix(rows, cols,seq1,seq2):
 	"""
 	making a scoring matrix that will then be filled with the scores
 	the best alignment is the path with the highest cumulative score
@@ -54,7 +54,7 @@ def newScoringMatrix(rows, cols):
 	maxPosition = None #highest recognized score
 	for i in range(rows): #begin looking through the matrix
 		for j in range(cols):
-			score1 = score(scoreMatrix, i, j) #calculate the score for the position
+			score1 = score(scoreMatrix, i, j,seq1,seq2) #calculate the score for the position
 			if score1 > maxScore: #put in the score, assign to postiion
 				maxScore = score1
 				maxPosition = (i, j)  #the max position is where the path will start
@@ -64,7 +64,7 @@ def newScoringMatrix(rows, cols):
 	return scoreMatrix, maxPosition 
 
 
-def score(matrix, x, y):
+def score(matrix, x, y,seq1,seq2):
 	"""
 	calculate the score for every position in the scoring matrix 
 	based on the position in the table's neighbors
@@ -80,7 +80,7 @@ def score(matrix, x, y):
     #return the best score of those calculated, this will be the way through the matrix and match up the seqs
 	return maximum 
 
-def path(scoreMatrix, startPosition): #AKA traceback
+def path(scoreMatrix, startPosition, seq1, seq2): #AKA traceback
 	"""
 	how to decide which path to take through the scoring matrix
 	taking the best path through the matrix based on the score will 

@@ -40,4 +40,9 @@ sequences = {file:parseFasta("./"+file) for file in allFiles}
 for pos in posMatches: #this will run through all the pairs of sequences and put them in the algorithm
 	#print(sequences[pos[0]])
 	#print(sequences[pos[1]])
-	sw(sequences[pos[0]], sequences[pos[1]])
+	sw(seq1 = sequences[pos[0]], seq2 = sequences[pos[1]])
+
+for neg in negMatches: #this will run through all the pairs of sequences and put them in the algorithm
+	#print(sequences[pos[0]])
+	#print(sequences[pos[1]])
+	sw(seq1 = sequences[neg[0]], seq2 = sequences[neg[1]])
