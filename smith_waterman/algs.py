@@ -3,13 +3,13 @@ import numpy as np
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
 gap = -1 #we need to penalize a gap
-seq1 = "SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM"
-seq2 = "ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
+seq1 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM"
+seq2 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDMXXXXX"#"ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
 #these can be global
 
 def sw(seq1, seq2):
-	seq1 = seq1
-	seq2 = seq2
+	seq1=seq1
+	seq2=seq2
 	rows = len(seq1) + 1 #for the matrix, plus a lil extra for the gap
 	cols = len(seq2) + 1
 
@@ -19,7 +19,7 @@ def sw(seq1, seq2):
 	#call the function to find the path through the scoring matrix,
 	#aligning the sequences
 	alignedSeq1, alignedSeq2 = path(scoreMatrix, startPosition)
-
+	assert len(alignedSeq1) == len(alignedSeq2), 'aligned strings are not the same size'
 	# print the results 
 	alignmentString1, idents, gaps, mismatches = alignmentString(alignedSeq1, alignedSeq2)
 	length1 = len(alignedSeq1)
@@ -34,13 +34,13 @@ def sw(seq1, seq2):
 		seq2_slice = alignedSeq2[i:i+60]
 		print('Seq B  {0:<4}  {1}  {2:<4}'.format(i + 1, seq2_slice, i + len(seq2_slice)))
 		print()
-	print(alignedSeq1)
-	print(alignedSeq2)
+	#print(alignedSeq1)
+	#print(alignedSeq2)
+	#print(len(scoreMatrix))
 	#print(scoreMatrix)
-	print(startPosition)
-	print(rows)
-	print(cols)
-	print(seq1)
+	print(startPosition) #first good match
+
+	return startPosition
 
     
 
@@ -52,16 +52,16 @@ def newScoringMatrix(rows, cols):
 	scoreMatrix = [[0 for col in range(cols)] for row in range(rows)] #initialize
 	maxScore = 0
 	maxPosition = None #highest recognized score
-	for i in range(1, rows): #begin looking through the matrix
-		for j in range(1, cols):
+	for i in range(rows): #begin looking through the matrix
+		for j in range(cols):
 			score1 = score(scoreMatrix, i, j) #calculate the score for the position
 			if score1 > maxScore: #put in the score, assign to postiion
 				maxScore = score1
-				maxPosition = (i, j)  
+				maxPosition = (i, j)  #the max position is where the path will start
 
 			scoreMatrix[i][j] = score1 #append the score to the position
 
-	return scoreMatrix, maxPosition
+	return scoreMatrix, maxPosition 
 
 
 def score(matrix, x, y):
@@ -164,4 +164,6 @@ def returnMatrix(matrix):
 			print()
 
 def roc():
+
+
     return None
