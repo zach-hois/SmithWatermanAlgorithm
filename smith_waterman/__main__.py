@@ -21,7 +21,7 @@ posMatches = [] #initializations
 allFiles = []
 
 BLOSUM50 = read_matrix("./BLOSUM50")
-print(BLOSUM50)
+#print(BLOSUM50)
 
 for file in pairs("./Pospairs.txt"): #take the file names from the pairs and get the sequence
 	posMatches.append(file)

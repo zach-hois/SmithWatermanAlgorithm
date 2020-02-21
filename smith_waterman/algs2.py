@@ -2,8 +2,8 @@ import numpy as np
 
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
-gap = -4 #we need to penalize a gap
-gap_e = -1
+gap = -1 #we need to penalize a gap
+gap_e = -2 #this is the penalty for continuing to extend a gap
 #seq1 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM"
 #seq2 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDMXXXXX"#"ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
 #these can be global
@@ -17,8 +17,8 @@ def sw(seq1, seq2, mat):
 	seq2 = seq2.upper()
 
 	#initialize the scoring matrix
-	flag = False
-	scoreMatrix, startPosition, maxScore = newScoringMatrix(rows,cols,seq1,seq2,mat,flag)
+	flag = False #this "flag" is to tell the scoring algorithm that there was previoiusly a gap and we are continuing it
+	scoreMatrix, startPosition, maxScore, flag = newScoringMatrix(rows,cols,seq1,seq2,mat,flag)
 
 	#call the function to find the path through the scoring matrix,
 	#aligning the sequences
@@ -76,14 +76,14 @@ def newScoringMatrix(rows, cols, seq1, seq2, mat,flag):
 	maxPosition = None #highest recognized score
 	for i in range(rows): #begin looking through the matrix
 		for j in range(cols):
-			score1 = score(scoreMatrix, i, j,seq1,seq2,mat,flag) #calculate the score for the position
+			score1, flag = score(scoreMatrix, i, j,seq1,seq2,mat,flag) #calculate the score for the position
 			if score1 > maxScore: #put in the score, assign to postiion
 				maxScore = score1
 				maxPosition = (i, j)  #the max position is where the path will start
 
 			scoreMatrix[i][j] = score1 #append the score to the position
 
-	return scoreMatrix, maxPosition, maxScore
+	return scoreMatrix, maxPosition, maxScore, flag
 
 
 def score(matrix, x, y, seq1, seq2,mat,flag):
@@ -96,8 +96,8 @@ def score(matrix, x, y, seq1, seq2,mat,flag):
 	similarity = mat[(seq1[x-1],seq2[y-1])]
 
 	diagonalScore = matrix[x-1][y-1] + similarity #we did something like this in class
-	if flag:
-		upScore = matrix[x-1][y] + gap_e
+	if flag: #this "flag" is to tell the scoring algorithm that there was previoiusly a gap and we are continuing it
+		upScore = matrix[x-1][y] + gap_e #if flag is true then we add the gap extension penalty instead of the gap penalty
 		leftScore = matrix[x][y-1] + gap_e
 	else:
 		upScore = matrix[x-1][y] + gap #vertical score accounting for gaps
@@ -105,13 +105,13 @@ def score(matrix, x, y, seq1, seq2,mat,flag):
 
 	maximum = max(0, diagonalScore, upScore, leftScore)
 
-	if upScore == maximum or leftScore == maximum:
-		flag = True
+	if upScore == maximum or leftScore == maximum: #this is what sets if the flag is true of false
+		flag = True #true when we open a gap and extend it
 	else:
 		flag = False
 
     #return the best score of those calculated, this will be the way through the matrix and match up the seqs
-	return maximum 
+	return maximum, flag
 
 def path(scoreMatrix, startPosition, seq1, seq2): #AKA traceback
 	"""
