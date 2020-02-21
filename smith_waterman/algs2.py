@@ -253,23 +253,19 @@ def roc():
 	negA_SCORES = []
 	negNormalizedScore = []
 	for pos in posMatches: #this will run through all the pairs of sequences and put them in the algorithm
-		#print(sequences[pos[0]])
-		#print(sequences[pos[1]])
 		#saving the scores so that i can call all of the positive and negative match scores
 		x, y, z = sw(seq1 = sequences[pos[0]], seq2 = sequences[pos[1]],mat= BLOSUM50) #done with blosum50 matrix
 		posA_SCORES.append(z) #scores
 		posNormalizedScore.append(y)
 	for neg in negMatches: #this will run through all the pairs of sequences and put them in the algorithm
-		#print(sequences[pos[0]])
-		#print(sequences[pos[1]])
 		x,y,z = sw(seq1 = sequences[neg[0]], seq2 = sequences[neg[1]],mat=BLOSUM50)
 		negA_SCORES.append(z)
 		negNormalizedScore.append(y)
 
 	posA_SCORES.sort()
 	print(posA_SCORES)
-	sortedPos = posA_SCORES[int(len(posA_SCORES) * 0.3)] #70% of positive scores are above this threshold
-	print(sortedPos)
+	posCutoff = posA_SCORES[int(len(posA_SCORES) * 0.3)] #70% of positive scores are above this threshold
+	print(posCutoff)
 	#print(Average(posA_SCORES)) #positive scores are on average higher than negative
 	#print(posNormalizedScore)
 	negA_SCORES.sort()
