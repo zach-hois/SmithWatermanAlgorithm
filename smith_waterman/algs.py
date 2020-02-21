@@ -14,7 +14,7 @@ def sw(seq1, seq2):
 	cols = len(seq2) + 1
 
 	#initialize the scoring matrix
-	scoreMatrix, startPosition = newScoringMatrix(rows, cols,seq1,seq2)
+	scoreMatrix, startPosition, maxScore = newScoringMatrix(rows, cols,seq1,seq2)
 
 	#call the function to find the path through the scoring matrix,
 	#aligning the sequences
@@ -40,22 +40,25 @@ def sw(seq1, seq2):
 	#print(len(scoreMatrix))
 	#print(scoreMatrix)
 	#print(startPosition) #first good match
+
 	A_SCORE = 0
 	for a in range(len(alignmentString1)):
 		if alignmentString1[a] == 'X': #mismatch 
 			A_SCORE -= 1
-			if alignmentString1[a-1] == 'X': #consecutive gap!
+			if alignmentString1[a-1] == 'X': #consecutive mismatch!
 				A_SCORE -= 2
 		elif alignmentString1[a] == ' ': #gap
 			A_SCORE -= 1
-			if alignmentString1[a-1] == ' ': #consecutive gap!
+			if alignmentString1[a-1] == ' ': #consecutive gap! if this happens there is a larger penalty than opening a gap
 				A_SCORE -= 2
 		elif alignmentString1[a] == '|':
 			A_SCORE += 1
 		normalizedAScore = A_SCORE/len(alignmentString1)
-	print(A_SCORE)
-	print(normalizedAScore)
-	return startPosition
+
+	#print(A_SCORE)
+	#print(normalizedAScore)
+	# print(maxScore)
+	return A_SCORE, normalizedAScore, maxScore
 
     
 
@@ -76,7 +79,7 @@ def newScoringMatrix(rows, cols, seq1, seq2):
 
 			scoreMatrix[i][j] = score1 #append the score to the position
 
-	return scoreMatrix, maxPosition
+	return scoreMatrix, maxPosition, maxScore
 
 
 def score(matrix, x, y, seq1, seq2):
@@ -100,6 +103,8 @@ def path(scoreMatrix, startPosition, seq1, seq2): #AKA traceback
 	how to decide which path to take through the scoring matrix
 	taking the best path through the matrix based on the score will 
 	align the sequences with the best match and gap sequence/ratio
+
+	also, this will be the function that takes the input matrix and can release a score
 
 	diagonal move = match or mismatch
 	up move = gap in seq1
@@ -168,11 +173,10 @@ def alignmentString(alignedSeq1, alignedSeq2):
 			alignmentString.append('X') #if they do not match but no gap put an X
 			mismatches += 1
 
-
-
 	return ''.join(alignmentString), idents, gaps, mismatches
 
 
 def roc():
-
-    return None
+	"""
+	"""
+	return None

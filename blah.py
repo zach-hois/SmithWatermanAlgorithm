@@ -16,8 +16,3 @@ def test_scoring(): #test that two identical sequences return a perfect match
 
     # update this assertion
 	print(algs.sw(seq1, seq2))#maximum position
-
-
-
-
-

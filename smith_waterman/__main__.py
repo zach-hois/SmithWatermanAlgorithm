@@ -36,13 +36,24 @@ sequences = {file:parseFasta("./"+file) for file in allFiles}
 
 #seq1 = "SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM"
 #seq2 = "ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
-
+posA_SCORES = []
+posNormalizedScore = []
+negA_SCORES = []
+negNormalizedScore = []
 for pos in posMatches: #this will run through all the pairs of sequences and put them in the algorithm
 	#print(sequences[pos[0]])
 	#print(sequences[pos[1]])
-	sw(seq1 = sequences[pos[0]], seq2 = sequences[pos[1]])
-
+	#saving the scores so that i can call all of the positive and negative match scores
+	x, y, z = sw(seq1 = sequences[pos[0]], seq2 = sequences[pos[1]])
+	posA_SCORES.append(z)
+	posNormalizedScore.append(y)
 for neg in negMatches: #this will run through all the pairs of sequences and put them in the algorithm
 	#print(sequences[pos[0]])
 	#print(sequences[pos[1]])
-	sw(seq1 = sequences[neg[0]], seq2 = sequences[neg[1]])
+	x,y,z = sw(seq1 = sequences[neg[0]], seq2 = sequences[neg[1]])
+	negA_SCORES.append(z)
+	negNormalizedScore.append(y)
+print(posA_SCORES)
+#print(posNormalizedScore)
+print(negA_SCORES)
+#print(negNormalizedScore)
