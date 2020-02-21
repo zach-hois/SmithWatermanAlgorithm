@@ -1,4 +1,6 @@
+import sys
 import numpy as np
+from .read_PAM import read_matrix #for blosum and those
 
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
@@ -45,7 +47,7 @@ def sw(seq1, seq2, mat):
 	#print(scoreMatrix)
 	#print(startPosition) #first good match
 
-	A_SCORE = 0
+	A_SCORE = 0 #ignore this
 	for a in range(len(alignmentString1)):
 		if alignmentString1[a] == 'X': #mismatch 
 			A_SCORE -= 1
@@ -192,8 +194,86 @@ def alignmentString(alignedSeq1, alignedSeq2):
 
 	return ''.join(alignmentString), idents, gaps, mismatches
 
+#^^^^^ smith waterman ^^^^^
+##########################################################################################################
+# vvvv roc vvvvv
+
+#the code below will allow me to take the positive and negative pairs and take the sequence
+def pairs(filename):
+	with open(filename) as fh:
+		for line in fh:
+			line = line.strip().split()
+			yield line[0], line[1]
+def parseFasta(filename): #This is used to take just the sequence from the fasta document
+	seq = ""
+	with open(filename) as fh:
+		for line in fh:
+			if line.startswith(">"):
+				continue
+			seq += line.strip()
+	return seq
+
+BLOSUM50 = read_matrix("./BLOSUM50")
+#print(BLOSUM50)
+BLOSUM62 = read_matrix("./BLOSUM62")
+MATIO = read_matrix("./MATIO")
+PAM100 = read_matrix("./PAM100")
+PAM250 = read_matrix("./PAM250")
+
+posMatches = [] #initializations
+allFiles = []
+
+for file in pairs("./Pospairs.txt"): #take the file names from the pairs and get the sequence
+	posMatches.append(file)
+	allFiles.append(file[0])
+	allFiles.append(file[1])
+
+negMatches = []
+for file in pairs("./Negpairs.txt"):
+	negMatches.append(file)
+	allFiles.append(file[0])
+	allFiles.append(file[1])
+
+allFiles = set(allFiles)
+
+sequences = {file:parseFasta("./"+file) for file in allFiles}
+
+def Average(list): #simple average
+	return sum(list) / len(list)
 
 def roc():
 	"""
+	the point of this function is to develop a receiver operating characteristic curve
+	I will use this to show the diagnostic ability of my smith waterman algorithm
+	the curve will be plotted using the true positive rate (% of positives that are above a threshold appropriately)
+	againse the false positive rate (% of negative pairs that are inappropriately above the threshold for a positive hit)
 	"""
+	posA_SCORES = []
+	posNormalizedScore = []
+	negA_SCORES = []
+	negNormalizedScore = []
+	for pos in posMatches: #this will run through all the pairs of sequences and put them in the algorithm
+		#print(sequences[pos[0]])
+		#print(sequences[pos[1]])
+		#saving the scores so that i can call all of the positive and negative match scores
+		x, y, z = sw(seq1 = sequences[pos[0]], seq2 = sequences[pos[1]],mat= BLOSUM50) #done with blosum50 matrix
+		posA_SCORES.append(z) #scores
+		posNormalizedScore.append(y)
+	for neg in negMatches: #this will run through all the pairs of sequences and put them in the algorithm
+		#print(sequences[pos[0]])
+		#print(sequences[pos[1]])
+		x,y,z = sw(seq1 = sequences[neg[0]], seq2 = sequences[neg[1]],mat=BLOSUM50)
+		negA_SCORES.append(z)
+		negNormalizedScore.append(y)
+
+	posA_SCORES.sort()
+	print(posA_SCORES)
+	sortedPos = posA_SCORES[int(len(posA_SCORES) * 0.3)] #70% of positive scores are above this threshold
+	print(sortedPos)
+	#print(Average(posA_SCORES)) #positive scores are on average higher than negative
+	#print(posNormalizedScore)
+	negA_SCORES.sort()
+	print(negA_SCORES)
+	#print(Average(negA_SCORES))
+	#print(negNormalizedScore)
 	return None

@@ -1,5 +1,19 @@
 import numpy as np
 
+#this has been ditched but im scared to delete it.
+#catch up in algs2.py 
+
+
+
+
+
+
+
+
+
+
+
+
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
 gap = -1 #we need to penalize a gap
