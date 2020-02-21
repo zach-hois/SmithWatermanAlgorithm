@@ -24,6 +24,7 @@ def sw(seq1, seq2):
 	alignmentString1, idents, gaps, mismatches = alignmentString(alignedSeq1, alignedSeq2)
 	length1 = len(alignedSeq1)
 
+
 	#using our alignment visualization function to show what is matches/not in the sequences
 	print(' Identities = {0}/{1} ({2:.1%}), Gaps = {3}/{4} ({5:.1%})'.format(idents,length1, idents / length1, gaps, length1, gaps / length1))
 	#this formula above will print out the % of matches in the sequence and the % of gaps too
@@ -38,13 +39,27 @@ def sw(seq1, seq2):
 	#print(alignedSeq2)
 	#print(len(scoreMatrix))
 	#print(scoreMatrix)
-	print(startPosition) #first good match
-
+	#print(startPosition) #first good match
+	A_SCORE = 0
+	for a in range(len(alignmentString1)):
+		if alignmentString1[a] == 'X': #mismatch 
+			A_SCORE -= 1
+			if alignmentString1[a-1] == 'X': #consecutive gap!
+				A_SCORE -= 2
+		elif alignmentString1[a] == ' ': #gap
+			A_SCORE -= 1
+			if alignmentString1[a-1] == ' ': #consecutive gap!
+				A_SCORE -= 2
+		elif alignmentString1[a] == '|':
+			A_SCORE += 1
+		normalizedAScore = A_SCORE/len(alignmentString1)
+	print(A_SCORE)
+	print(normalizedAScore)
 	return startPosition
 
     
 
-def newScoringMatrix(rows, cols,seq1,seq2):
+def newScoringMatrix(rows, cols, seq1, seq2):
 	"""
 	making a scoring matrix that will then be filled with the scores
 	the best alignment is the path with the highest cumulative score
@@ -61,10 +76,10 @@ def newScoringMatrix(rows, cols,seq1,seq2):
 
 			scoreMatrix[i][j] = score1 #append the score to the position
 
-	return scoreMatrix, maxPosition 
+	return scoreMatrix, maxPosition
 
 
-def score(matrix, x, y,seq1,seq2):
+def score(matrix, x, y, seq1, seq2):
 	"""
 	calculate the score for every position in the scoring matrix 
 	based on the position in the table's neighbors
@@ -141,6 +156,7 @@ def alignmentString(alignedSeq1, alignedSeq2):
 	"""
 	idents, gaps, mismatches = 0,0,0 #initialization 
 	alignmentString = []
+	A_SCORE = 0 #this will be the full score of the alignment
 	for base1, base2 in zip(alignedSeq1, alignedSeq2):
 		if base1 == base2: #if the bases are the same we show the match symbol
 			alignmentString.append('|')
@@ -151,19 +167,12 @@ def alignmentString(alignedSeq1, alignedSeq2):
 		else:
 			alignmentString.append('X') #if they do not match but no gap put an X
 			mismatches += 1
+
+
+
 	return ''.join(alignmentString), idents, gaps, mismatches
 
 
-def returnMatrix(matrix):
-	"""
-	using this to visualize the scoring matrix for sanity
-	"""
-	for row in matrix:
-		for col in row:
-			print('{0:4}'.format(col))
-			print()
-
 def roc():
-
 
     return None
