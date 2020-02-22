@@ -4,8 +4,8 @@ from .read_PAM import read_matrix #for blosum and those
 
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
-gap = -1 #we need to penalize a gap
-gap_e = -2 #this is the penalty for continuing to extend a gap
+gap = -20 #we need to penalize a gap
+gap_e = -4 #this is the penalty for continuing to extend a gap
 #seq1 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM"
 #seq2 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDMXXXXX"#"ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
 #these can be global
@@ -30,7 +30,7 @@ def sw(seq1, seq2, mat):
 	alignmentString1, idents, gaps, mismatches = alignmentString(alignedSeq1, alignedSeq2)
 	length1 = len(alignedSeq1)
 
-
+	"""
 	#using our alignment visualization function to show what is matches/not in the sequences
 	print(' Identities = {0}/{1} ({2:.1%}), Gaps = {3}/{4} ({5:.1%})'.format(idents,length1, idents / length1, gaps, length1, gaps / length1))
 	#this formula above will print out the % of matches in the sequence and the % of gaps too
@@ -41,6 +41,8 @@ def sw(seq1, seq2, mat):
 		seq2_slice = alignedSeq2[i:i+60]
 		print('Seq B  {0:<4}  {1}  {2:<4}'.format(i + 1, seq2_slice, i + len(seq2_slice)))
 		print()
+	"""
+
 	#print(alignedSeq1)
 	#print(alignedSeq2)
 	#print(len(scoreMatrix))
@@ -263,13 +265,25 @@ def roc():
 		negNormalizedScore.append(y)
 
 	posA_SCORES.sort()
-	print(posA_SCORES)
+	#print(posA_SCORES)
 	posCutoff = posA_SCORES[int(len(posA_SCORES) * 0.3)] #70% of positive scores are above this threshold
-	print(posCutoff)
+	#print(posCutoff)
+	print("The gap penalty is: " + str(gap))
+	print("The gap extension penalty is: " + str(gap_e))
+	pcount = 0
+	for k in posA_SCORES:
+		if k > posCutoff:
+			pcount = pcount + 1
+	truePositives = (pcount / (len(posA_SCORES))) * 100
+	print("The proportion of true positives is " + str(truePositives) + "%.") 
 	#print(Average(posA_SCORES)) #positive scores are on average higher than negative
 	#print(posNormalizedScore)
-	negA_SCORES.sort()
-	print(negA_SCORES)
+	ncount = 0
+	for k in negA_SCORES:
+		if k > posCutoff:
+			ncount = ncount + 1
+	falsePositives = (ncount/(len(negA_SCORES))) * 100
+	print("The proportion of false positives is " + str(falsePositives) + "%.") 
 	#print(Average(negA_SCORES))
 	#print(negNormalizedScore)
 	return None
