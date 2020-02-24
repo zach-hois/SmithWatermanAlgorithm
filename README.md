@@ -1,6 +1,7 @@
 # example
 
-[![Build Status](https://travis-ci.org/zach-hois/SmithWatermanAlgorithm.svg?branch=master)](https://travis-ci.org/zach-hois/SmithWatermanAlgorithm)
+[![Build Status](https://travis-ci.org/zach-hois/SmithWatermanAlgorithm)](https://travis-ci.org/zach-hois/SmithWatermanAlgorithm)
+
 
 Example python project with testing.
 

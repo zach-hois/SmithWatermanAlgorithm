@@ -60,18 +60,18 @@ def calculate_tp_fp(pos_matches,neg_matches,sequences,threshold,gap_p,gap_e,matr
 	false_pos = 0 
 
 	for pos in pos_matches: #run this to scrape all of the + matches
-		score = run_local_alignment(sequences[pos[1]], sequences[pos[0]],gap_p,gap_e,matrix)
+		score = (run_local_alignment(sequences[pos[1]], sequences[pos[0]],gap_p,gap_e,matrix))/len(sequences[pos[1]])
 		#if normalize: #the normalized score is tajing into account the length of the sequence
-		score = score/len(sequences[pos[1]])
+		#	score = score/len(sequences[pos[1]])
 		if score >= threshold: #we want 70% true positives ideally
 			true_pos += 1
 		else:
 			false_neg += 1	
 			
 	for neg in neg_matches: #do the same with the negative matches
-		score = run_local_alignment(sequences[neg[1]], sequences[neg[0]],gap_p,gap_e,matrix)
+		score = (run_local_alignment(sequences[neg[1]], sequences[neg[0]],gap_p,gap_e,matrix))/len(sequences[pos[1]])
 		#if normalize:
-		score = score/len(sequences[neg[1]])
+		#	score = score/len(sequences[neg[1]])
 		if score < threshold:
 			true_neg += 1
 		else:
@@ -118,8 +118,9 @@ if __name__ == "__main__":
 			r.add_rates(tp,fp) #put the rates on the graph
 		r.plot_ROC(lab=matrix)
 		r.new_curve()
+		r.show_plot()
 
-	r.save_plot("final_normalized_ROC") #save the final graph
+	#r.save_plot("final_normalized_ROC") #save the final graph
 
 
 
