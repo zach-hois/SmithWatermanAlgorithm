@@ -1,6 +1,8 @@
 import sys
 import numpy as np
 from .read_PAM import read_matrix #for blosum and those
+#from .__main__ import calculate_tp_fp
+import random
 
 match = 2 #scores taken from the suggested on wikipedia
 mismatch = -1 #these decide the next step in the matrix
@@ -10,7 +12,7 @@ gap_e = -4 #this is the penalty for continuing to extend a gap
 #seq2 = []#"SLEAAQKSNVTSSWAKASAAWGTAGPEFFMALFDAHDDVFAKFSGLFSGAAKGTVKNTPEMAAQAQSFKGLVSNWVDNLDNAGALEGQCKTFAANHKARGISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDMXXXXX"#"ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINK"
 #these can be global
 
-def sw(seq1, seq2, mat):
+def sw(seq1, seq2, gap, gap_e, mat):
 	#seq1=seq1
 	#seq2=seq2
 	rows = len(seq1) + 1 #for the matrix, plus a lil extra for the gap
@@ -249,6 +251,8 @@ def roc():
 	I will use this to show the diagnostic ability of my smith waterman algorithm
 	the curve will be plotted using the true positive rate (% of positives that are above a threshold appropriately)
 	againse the false positive rate (% of negative pairs that are inappropriately above the threshold for a positive hit)
+
+	this is how i found the best gaps to use, shown in the pdf document
 	"""
 	posA_SCORES = []
 	posNormalizedScore = []
@@ -286,4 +290,85 @@ def roc():
 	print("The proportion of false positives is " + str(falsePositives) + "%.") 
 	#print(Average(negA_SCORES))
 	#print(negNormalizedScore)
-	return None
+
+
+
+
+##########################################################################################################
+#optimization
+
+def matrixMutation(scoreMatrix, chance, mutation):
+	"""
+	change the matrix values, each value has a chance of mutating
+	returns the changed matrix
+	"""
+	for i, j in scoreMatrix.items():
+		if random.random() < chance: #randomly pick a number for the chance
+			scoreMatrix[i] = value + random.gauss(0, mutation) #random amount as well
+	return scoreMatrix #samea s the input to be used later
+
+def select(population, weights):
+	"""
+	randomly generate matrices with different weights 
+	"""
+	return list(np.random.choice(pop, size = len(pop), p = weights))
+
+def scaleScores(scores, pressure):
+	"""
+	scales the scores in accordance to the selective pressure, with a sum of 1
+	"""
+	formerMinimum = min(scores)
+	formerMaximum = max(scores)
+	newMinimum = 1
+	newMaximum = 10**pressure
+	newScores = [(newMaximum - newMinimum)*(s - oldMinimum)/(oldMaximum - oldMinimum) + newMinimum for s in scores]
+
+	return [p/sum(newScores) for p in newScores]
+
+def optimization(scoreMatrix, chance, mutation, pressure, N, stepCutoff, 
+	noImprovementSteps, librarySize, gap, gap_e, truePositives, trueNegatives):
+	"""
+	my idea, based on what was discussed in class, was to use a genetic optimization algorithm 
+	in theory the genetic optimization is a way of solving problems that mimics biological evolution
+	the algorithm repeatedly modifies a population of individual solutions
+
+	input:
+	scoring matrix
+	chance of mutation (probability of a mutation in the matrix)
+	mutation (amlount that changes, standard deviation)
+	pressure (selective pressure)
+	cutoff (to stop the run)
+	no improvement steps
+	size of the library
+	gap
+	gap extension penalty
+	truePositives
+	trueNegatives
+
+	output:
+	the matrices that perform the best and are optimized
+	"""
+	population = [scoreMatrix.copy() for i in range(N)]
+	library = {} #initialize
+
+	#this loop will keep track of the changes for the objective
+	objectiveMeans = []
+	counter = 0 #initialize the improvement counter
+
+	while True: #run this loop until we find improvements
+		counter += 1
+		population = [matrixMutation(m, chance, mutation) for m in pop] #mutate matrices for the population 
+		scores = []
+
+		objectiveMean = sum(scores)/N #see the new avg score
+		objectiveMean.append(objectiveMean) #add it on
+
+		if len(objectiveMeans) > stepCutoff or  counter > noImprovementSteps:
+			break #we will stop if these conditions are met
+		weights = scaleScores(scores, pressure) #reweight the scores
+		pop = select(pop, weights)[:-len(library)] + [z.copy() for z in library.values()] #put the good ones into the population
+	return pop, scores, library, objectiveMeans
+
+
+
+
