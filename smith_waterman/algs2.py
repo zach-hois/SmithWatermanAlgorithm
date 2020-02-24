@@ -98,8 +98,9 @@ def score(matrix, x, y, seq1, seq2,mat,flag):
 	based on the position in the table's neighbors
 	"""
 	# similarity = match if seq1[x-1] == seq2[y-1] else mismatch #this is meta to check if the two positions in a sequence match
-
+	print(seq1[x-1])
 	similarity = mat[(seq1[x-1],seq2[y-1])]
+
 
 	diagonalScore = matrix[x-1][y-1] + similarity #we did something like this in class
 	if flag: #this "flag" is to tell the scoring algorithm that there was previoiusly a gap and we are continuing it

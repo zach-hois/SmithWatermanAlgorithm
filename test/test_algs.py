@@ -154,7 +154,7 @@ gap_e = -4
 matrix = "BLOSUM50"
 
 #def test_roc():
-	#assert __main__.calculate_tp_fp(posMatches,negMatches,sequences,threshold,gap_p,gap_e,matrix,normalize=False) == 0
+#	assert __main__.calculate_tp_fp(posMatches,negMatches,sequences,threshold,gap_p,gap_e,matrix,normalize=False) == 0
 
 
 

@@ -1,7 +1,7 @@
 import sys
 #from .algs import sw
 from smith_waterman import algs, algs2, read_PAM
-from .algs2 import sw
+from .algs2 import sw, optimization
 from .read_PAM import read_matrix
 from .ROC import roc
 import tqdm as tq
@@ -50,9 +50,9 @@ def run_local_alignment(seq1, seq2, gap_penalty, gap_extension,matrix):
 	A = algs2.sw(seq1.upper(), seq2.upper(),gap_penalty,gap_extension,matrix) #pass dictionary
 	return A[2]
 
-def calculate_tp_fp(pos_matches,neg_matches,sequences,threshold,gap_p,gap_e,matrix,normalize=True):
+def calculate_tp_fp(pos_matches,neg_matches,sequences,threshold,gap_p,gap_e,matrix,normalize=False):
 	"""
-	true and false positives are necessary for making an roc
+	#true and false positives are necessary for making an roc
 	"""
 	true_pos = 0 #initializations
 	false_neg = 0 
@@ -60,18 +60,18 @@ def calculate_tp_fp(pos_matches,neg_matches,sequences,threshold,gap_p,gap_e,matr
 	false_pos = 0 
 
 	for pos in pos_matches: #run this to scrape all of the + matches
-		score = (run_local_alignment(sequences[pos[1]], sequences[pos[0]],gap_p,gap_e,matrix))/len(sequences[pos[1]])
-		#if normalize: #the normalized score is tajing into account the length of the sequence
-		#	score = score/len(sequences[pos[1]])
+		score = run_local_alignment(sequences[pos[1]], sequences[pos[0]],gap_p,gap_e,matrix)
+		if normalize: #the normalized score is tajing into account the length of the sequence
+			score = score/min(len(sequences[pos[1]]),len(sequences[pos[0]]))
 		if score >= threshold: #we want 70% true positives ideally
 			true_pos += 1
 		else:
 			false_neg += 1	
 			
 	for neg in neg_matches: #do the same with the negative matches
-		score = (run_local_alignment(sequences[neg[1]], sequences[neg[0]],gap_p,gap_e,matrix))/len(sequences[pos[1]])
-		#if normalize:
-		#	score = score/len(sequences[neg[1]])
+		score = run_local_alignment(sequences[neg[1]], sequences[neg[0]],gap_p,gap_e,matrix)
+		if normalize:
+			score = score/min(len(sequences[neg[1]]),len(sequences[neg[0]]))
 		if score < threshold:
 			true_neg += 1
 		else:
@@ -114,14 +114,12 @@ if __name__ == "__main__":
 			
 			tp,fp = calculate_tp_fp(pos_matches,neg_matches,sequences,
 				threshold,gap_p,gap_e,matrix_dict, normalize = True) #one for normalize true and one for false
-
+			print(tp,fp)
 			r.add_rates(tp,fp) #put the rates on the graph
 		r.plot_ROC(lab=matrix)
 		r.new_curve()
-		r.show_plot()
 
 	#r.save_plot("final_normalized_ROC") #save the final graph
-
 
 
 
