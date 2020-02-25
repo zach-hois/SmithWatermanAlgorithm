@@ -92,13 +92,13 @@ def newScoringMatrix(rows, cols, seq1, seq2, mat,flag):
 	return scoreMatrix, maxPosition, maxScore, flag
 
 
-def score(matrix, x, y, seq1, seq2,mat,flag):
+def score(matrix, x, y, seq1, seq2, mat,flag):
 	"""
 	calculate the score for every position in the scoring matrix 
 	based on the position in the table's neighbors
 	"""
 	# similarity = match if seq1[x-1] == seq2[y-1] else mismatch #this is meta to check if the two positions in a sequence match
-	print(seq1[x-1])
+
 	similarity = mat[(seq1[x-1],seq2[y-1])]
 
 

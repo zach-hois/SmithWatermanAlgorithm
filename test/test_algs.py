@@ -35,7 +35,12 @@ Seq A  101   ISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM  142
 Seq B  101   ISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM  142
 """
 
-
+"""
+def testOptimization():
+	pop, scores, library, objectiveMeans = optimization(scoreMatrix, chance, mutation, pressure, N, stepCutoff, noImprovementSteps, librarySize, gap, gap_e, truePositives, trueNegatives)
+	originalScores = algs.sw(seq1, seq2)[0]
+	assert scores >= originalScores
+"""
 
 
 
@@ -153,8 +158,6 @@ gap_p = -20
 gap_e = -4
 matrix = "BLOSUM50"
 
-#def test_roc():
-#	assert __main__.calculate_tp_fp(posMatches,negMatches,sequences,threshold,gap_p,gap_e,matrix,normalize=False) == 0
 
 
 

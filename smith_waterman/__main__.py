@@ -107,21 +107,19 @@ if __name__ == "__main__":
 	gap_p = -20
 	gap_e = -4
 	r = roc() 
+
 	for matrix in matrices:
 		matrix_dict = read_matrix("./" + matrix) #this will run for every matrix
 		print("Testing ",matrix)
 		for threshold in tq.tqdm(thresholds):#loop over 8 different thresholds
 			
 			tp,fp = calculate_tp_fp(pos_matches,neg_matches,sequences,
-				threshold,gap_p,gap_e,matrix_dict, normalize = True) #one for normalize true and one for false
-			print(tp,fp)
+				threshold,gap_p,gap_e,matrix_dict, normalize = False) #one for normalize true and one for false
+			
 			r.add_rates(tp,fp) #put the rates on the graph
 		r.plot_ROC(lab=matrix)
 		r.new_curve()
 
 	#r.save_plot("final_normalized_ROC") #save the final graph
-
-
-
 
 
