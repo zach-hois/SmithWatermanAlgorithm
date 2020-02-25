@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from smith_waterman import algs, algs2, read_PAM, __main__
+from smith_waterman import algs, algs2, read_PAM, __main__, ROC
 import sys
 import re
 import tqdm as tq
@@ -35,20 +35,61 @@ Seq A  101   ISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM  142
 Seq B  101   ISAGQLEAAFKVLSGFMKSYGGDEGAWTAVAGALMGEIEPDM  142
 """
 
+def testROC():
+
+	if __name__ == "__main__":
+		pos_matches = []
+		all_files = []
+		for file in pairs("./Pospairs.txt"): #probably redundant but keeping everything to be safe
+			pos_matches.append(file) #you always said never delete code haha
+			all_files.append(file[0])
+			all_files.append(file[1])
+		neg_matches = []
+		for file in pairs("./Negpairs.txt"):
+			neg_matches.append(file)
+			all_files.append(file[0])
+			all_files.append(file[1])
+
+		all_files = set(all_files)
+
+		sequences = {file:parseFasta("./"+file) for file in all_files}
+
+		BLOSUM50 = read_matrix("./BLOSUM50")
+
+		#below we will make the actual ROC
+		matrices = ["BLOSUM50","BLOSUM62","PAM100","PAM250"] #we will test with each different scoring method 
+		thresholds = [0,10,15,30,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,210,230,250,500]
+		gap_p = -20
+		gap_e = -4
+		r = roc() 
+
+		for matrix in matrices:
+			matrix_dict = read_matrix("./" + matrix) #this will run for every matrix
+			print("Testing ",matrix)
+			for threshold in tq.tqdm(thresholds):#loop over 8 different thresholds
+				
+				tp,fp = calculate_tp_fp(pos_matches,neg_matches,sequences,
+					threshold,gap_p,gap_e,matrix_dict, normalize = False) #one for normalize true and one for false
+				
+				r.add_rates(tp,fp) #put the rates on the graph
+				truePositives.append(tp)
+				falsePositives.append(fp)
+				print(truePositives)
+			return truePositives, falsePositives
+
+
+		assert truePositives[:10] == [1.0, 1.0, 1.0, 0.96, 0.34, 0.18, 0.12, 0.1, 0.08, 0.04, 0.04] #basically rerunning all of this to check that the true and false positives are working 
+		assert truePositives[:10] == [1.0, 1.0, 1.0, 0.72, 0.08, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0] #and then these will be plotted. these are just got BLOSUM50
+
+	#r.save_plot("final_normalized_ROC") #save the final graph
+
+
 """
 def testOptimization():
 	pop, scores, library, objectiveMeans = optimization(scoreMatrix, chance, mutation, pressure, N, stepCutoff, noImprovementSteps, librarySize, gap, gap_e, truePositives, trueNegatives)
 	originalScores = algs.sw(seq1, seq2)[0]
 	assert scores >= originalScores
 """
-
-
-
-
-
-
-
-
 
 
 
@@ -158,6 +199,10 @@ gap_p = -20
 gap_e = -4
 matrix = "BLOSUM50"
 
+
+
+
+	#r.save_plot("final_normalized_ROC") #save the final graph
 
 
 

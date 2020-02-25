@@ -107,7 +107,8 @@ if __name__ == "__main__":
 	gap_p = -20
 	gap_e = -4
 	r = roc() 
-
+	truePositives = []
+	falsePositives = []
 	for matrix in matrices:
 		matrix_dict = read_matrix("./" + matrix) #this will run for every matrix
 		print("Testing ",matrix)
@@ -117,6 +118,10 @@ if __name__ == "__main__":
 				threshold,gap_p,gap_e,matrix_dict, normalize = False) #one for normalize true and one for false
 			
 			r.add_rates(tp,fp) #put the rates on the graph
+			truePositives.append(tp)
+			falsePositives.append(fp)
+			print(truePositives)
+			print(falsePositives)
 		r.plot_ROC(lab=matrix)
 		r.new_curve()
 
